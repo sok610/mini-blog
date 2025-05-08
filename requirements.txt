@@ -1,0 +1,4 @@
+# no DB requirement, uses built-in SQLite
+Django==5.2.1
+django-tailwind==4.0.1
+django-browser-reload==1.18.0

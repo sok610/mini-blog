@@ -1,0 +1,25 @@
+{% extends 'blog/landing.html' %}
+
+{% block page_content %}
+<h2 class="text-xl font-semibold mb-4">My Posts</h2>
+
+<ul class="space-y-4">
+    {% for post in posts %}
+        <li class="bg-white p-4 rounded shadow hover:shadow-md transition">
+            <h3 class="text-lg font-bold mb-1">{{ post.title }}</h3>
+            <p class="text-gray-600 text-sm mb-2">Created on {{ post.created_at|date:"Y-m-d H:i" }}</p>
+            <p>{{ post.content|truncatechars:150 }}</p>
+
+            <div class="mt-2 space-x-2">
+                <a href="{% url 'post_edit' post.id %}" class="text-blue-500 hover:underline text-sm">Edit</a>
+                <form method="post" action="{% url 'post_delete' post.id %}" class="inline" onsubmit="return confirm('Delete this post?');">
+                    {% csrf_token %}
+                    <button type="submit" class="text-red-500 hover:underline text-sm">Delete</button>
+                </form>
+            </div>
+        </li>
+    {% empty %}
+        <li class="text-gray-500">You haven't written any posts yet.</li>
+    {% endfor %}   
+</ul>
+{% endblock %}

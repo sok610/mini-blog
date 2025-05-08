@@ -1,0 +1,54 @@
+{% extends 'blog/landing.html' %}
+
+{% block page_content %}
+<h2 class="text-xl font-semibold mb-4">Recent Posts</h2>
+
+<form method="get" class="mb-6 flex items-center space-x-2">
+    <input 
+        type="text" 
+        name="q" 
+        placeholder="Search..." 
+        value="{{ request.GET.q }}" 
+        class="flex-1 border border-gray-300 rounded px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
+    >
+    <select name="type" class="border border-gray-300 rounded px-2 py-2 text-sm">
+        <option value="title" {% if request.GET.type == "title" or not request.GET.type %}selected{% endif %}>Title</option>
+        <option value="content" {% if request.GET.type == 'content' %}selected{% endif %}>Content</option>
+    </select>
+    <button
+        type="submit"
+        class="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600 transition text-sm"
+    >
+        Search
+    </button>
+</form>
+
+{% if request.GET.q %}
+    <p class="text-sm text-gray-600 mb-4">
+        {{ posts.count }} results{{ posts.count|pluralize }} found 
+        <strong>"{{ request.GET.q }}"</strong> in
+        <strong>{{ request.GET.type|default:"title" }}</strong>
+    </p>
+{% endif %}
+
+<ul class="space-y-4">
+    {% for post in posts %}
+        <li class="bg-white p-4 rounded shadow hover:shadow-md transition">
+            <h3 class="text-lg font-bold mb-1">{{ post.title }}</h3>
+            <p class="text-gray-600 text-sm mb-2">
+                by {{ post.author.username }} on {{ post.created_at|date:"Y-m-d H:i" }}
+            </p>
+            <p>{{ post.content|truncatechars:150 }}</p>
+            
+            {% if user == post.author %}
+                <form method='post' action="{% url 'post_delete' post.id %}" onsubmit="return confirm('Are you sure you want to delete this post?');">
+                    {% csrf_token %}
+                    <button type="submit" class="text-red-500 mt-2 hover:underline text-sm">Delete</button>
+                </form>
+            {% endif %}
+        </li>
+    {% empty %}
+        <li class="text-gray-500">No posts found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
